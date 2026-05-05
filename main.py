@@ -438,7 +438,7 @@ class App:
         pcts = [estadisticas["pct_sector_cercano"],
                 estadisticas["pct_sector_intermedio"],
                 estadisticas["pct_sector_lejano"]]
-        self.axs[0].bar(sectores, pcts, color=["#4c9be8", "#f0a500", "#e85454"])
+        self.axs[0].bar(sectores, pcts, color=["#F2DDA4", "#B4E1D0", "#F4B3A8"])
         self.axs[0].set_title("Distribución de Sectores (%)")
         self.axs[0].set_ylabel("%")
         self.axs[0].set_ylim(0, 60)
@@ -462,7 +462,7 @@ class App:
             self.axs[1].pie(vals2,
                             labels=["Recorrido Base", "Detención Panel", "Bloqueo Neto", "Parada Extra"],
                             autopct="%1.1f%%",
-                            colors=["#4c9be8", "#f0a500", "#e85454", "#9b4ce8"],
+                            colors=["#FFAE80", "#ACF4F4", "#FADADD", "#B9A3E3"],
                             startangle=90)
             self.axs[1].set_title("Composición Promedio del Tiempo Total")
 
@@ -475,7 +475,7 @@ class App:
             estadisticas["pct_cartel_y_extra"],
         ]
         self.axs[2].bar(eventos, vals3,
-                        color=["#4c9be8", "#f0a500", "#e85454", "#9b4ce8"])
+                        color=["#ACF4F4", "#B9A3E3", "#FADADD", "#C1D5C0"])
         self.axs[2].set_title("% de Ocurrencia de Eventos")
         self.axs[2].set_ylabel("%")
         for i, v in enumerate(vals3):
