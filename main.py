@@ -36,11 +36,11 @@ def sector_cuadras_local(rnd, p_cercano, p_intermedio, p_lejano):
     acum1 = p_cercano
     acum2 = p_cercano + p_intermedio
     if rnd < acum1:
-        return "Cercano", 1, 2
+        return "Cercano"      
     elif rnd < acum2:
-        return "Intermedio", 2, 3
+        return "Intermedio"   
     else:
-        return "Lejano", 3, 5
+        return "Lejano"       
 
 
 def simular(n_dias,
@@ -52,27 +52,26 @@ def simular(n_dias,
             fila_inicio):
     
     # Acumuladores globales
-    tiempo_total_acum        = 0.0
-    tiempo_max               = -np.inf
-    tiempo_min               =  np.inf
-    cnt_cartel_y_extra       = 0
+    tiempo_total_acum = 0.0
+    tiempo_max = -np.inf
+    tiempo_min = np.inf
+    cnt_cartel_y_extra = 0
     cnt_sin_cartel_sin_extra = 0
-    cnt_bloqueo              = 0
-    cnt_cercano              = 0
-    cnt_intermedio           = 0
-    cnt_lejano               = 0
-    tiempo_sector            = {"Cercano": 0.0, "Intermedio": 0.0, "Lejano": 0.0}
+    cnt_bloqueo = 0
+    cnt_cercano = 0
+    cnt_intermedio = 0
+    cnt_lejano = 0
+    tiempo_sector = {"Cercano": 0.0, "Intermedio": 0.0, "Lejano": 0.0}
 
     tiempo_acum_parcial = 0.0
-    vector_estado       = []
-    fila_fin_rango      = fila_inicio + 200
+    vector_estado = []
+    fila_fin_rango = fila_inicio + 200
 
     for i in range(1, n_dias + 1):
         # 1. Sector
         rnd_sector = np.random.rand()
-        nombre_sector, c_min, c_max = sector_cuadras_local(
+        nombre_sector = sector_cuadras_local(
             rnd_sector, prob_cercano, prob_intermedio, prob_lejano)
-        n_cuadras = np.random.randint(c_min, c_max + 1)
 
         # 2. Tiempo recorrido cuadra Distr Uniforme (Verde Claro)
         rnd_t_cuadra = np.random.rand()
@@ -89,26 +88,26 @@ def simular(n_dias,
         else:
             rnd1_normal = np.nan
             rnd2_normal = np.nan
-            t_cartel    = 0.0
+            t_cartel = 0.0
 
         # 3.5 Tiempo recorrido con detencion (Suma base + normal)
         t_circulacion = t_base_total + t_cartel
 
         # 4. Bloqueo e Incremento del 80% (Verde Oscuro)
         aplica_bloqueo = nombre_sector in ("Cercano", "Lejano")
-        rnd_bloqueo    = np.random.rand() if aplica_bloqueo else np.nan
-        hubo_bloqueo   = aplica_bloqueo and (rnd_bloqueo < prob_bloqueo)
+        rnd_bloqueo = np.random.rand() if aplica_bloqueo else np.nan
+        hubo_bloqueo = aplica_bloqueo and (rnd_bloqueo < prob_bloqueo)
 
         if hubo_bloqueo:
             t_mostrar_bloqueo = t_circulacion * factor_bloqueo  # Lo que se ve en la tabla
-            t_para_sumar      = t_circulacion * factor_bloqueo  # Lo que se usa para el total
+            t_para_sumar = t_circulacion * factor_bloqueo  # Lo que se usa para el total
         else:
-            t_mostrar_bloqueo = 0.0                             # Muestra 0.0 si NO o N/A
-            t_para_sumar      = t_circulacion                   # Guarda el tiempo real para que no dé 0
+            t_mostrar_bloqueo = 0.0  # Muestra 0.0 si NO o N/A
+            t_para_sumar = t_circulacion  # Guarda el tiempo real para que no dé 0
 
         # 5. Parada extra [Exponencial] (Rosa)
         rnd_parada_extra = np.random.rand()
-        parada_extra     = rnd_parada_extra < prob_extra
+        parada_extra = rnd_parada_extra < prob_extra
         if parada_extra:
             rnd_exp = np.random.rand()
             t_extra = -media_extra * np.log(1 - rnd_exp)   # Fórmula ajustada: -media * LN(1-RND)
@@ -150,57 +149,56 @@ def simular(n_dias,
 
         if en_rango or es_ultima:
             fila = {
-                "Jornada":           i,
-                "RND_Sector":        round(rnd_sector, 4),
-                "Sector":            nombre_sector,
-                "Cuadras":           n_cuadras,
+                "Jornada": i,
+                "RND_Sector": round(rnd_sector, 4),
+                "Sector": nombre_sector,
                 
                 # Verde Claro
-                "RND_T_Cuadra":      round(rnd_t_cuadra, 4),
+                "RND_T_Cuadra": round(rnd_t_cuadra, 4),
                 "T_Base_Cuadras(s)": round(t_base_total, 2), # "Tiempo recorrido cuadra"
-                
+
                 # Celeste
-                "RND_Detencion":     round(rnd_detencion, 4),
-                "Detencion":         "Sí" if parada_cartel else "No",
-                
+                "RND_Detencion": round(rnd_detencion, 4),
+                "Detencion": "Sí" if parada_cartel else "No",
+
                 # Naranja
-                "RND1_Normal":       round(rnd1_normal, 4) if parada_cartel else "-",
-                "RND2_Normal":       round(rnd2_normal, 4) if parada_cartel else "-",
-                "T_Detencion(s)":    round(t_cartel, 2),
-                "T_Circulacion(s)":  round(t_circulacion, 2), # Actúa como tu "Tiempo recorrido con detención"
-                
+                "RND1_Normal": round(rnd1_normal, 4) if parada_cartel else "-",
+                "RND2_Normal": round(rnd2_normal, 4) if parada_cartel else "-",
+                "T_Detencion(s)": round(t_cartel, 2),
+                "T_Circulacion(s)": round(t_circulacion, 2), # Actúa como tu "Tiempo recorrido con detención"
+
                 # Verde Oscuro
-                "RND_Bloqueo":       round(rnd_bloqueo, 4) if aplica_bloqueo else "-",
-                "Hay_Bloqueo":       "Sí" if hubo_bloqueo else ("No" if aplica_bloqueo else "N/A"),
-                "T_Bloqueo_Extra(s)":round(t_mostrar_bloqueo, 2), # Ahora muestra 0.0 cuando es No o N/A
-                
+                "RND_Bloqueo": round(rnd_bloqueo, 4) if aplica_bloqueo else "-",
+                "Hay_Bloqueo": "Sí" if hubo_bloqueo else ("No" if aplica_bloqueo else "N/A"),
+                "T_Bloqueo_Extra(s)": round(t_mostrar_bloqueo, 2), # Ahora muestra 0.0 cuando es No o N/A
+
                 # Rosa
-                "RND_Parada_Extra":  round(rnd_parada_extra, 4),
-                "Parada_Extra":      "Sí" if parada_extra else "No",
-                "RND_Exp":           round(rnd_exp, 4) if parada_extra else "-",
-                "T_Extra(s)":        round(t_extra, 2),
-                
+                "RND_Parada_Extra": round(rnd_parada_extra, 4),
+                "Parada_Extra": "Sí" if parada_extra else "No",
+                "RND_Exp": round(rnd_exp, 4) if parada_extra else "-",
+                "T_Extra(s)": round(t_extra, 2),
+
                 # Blancos (Totales)
-                "T_Total(s)":        round(t_total, 2),
-                "T_Acum(s)":         round(tiempo_acum_parcial, 2),
-                "T_Prom_Acum(s)":    round(tiempo_acum_parcial / i, 2),
+                "T_Total(s)": round(t_total, 2),
+                "T_Acum(s)": round(tiempo_acum_parcial, 2),
+                "T_Prom_Acum(s)": round(tiempo_acum_parcial / i, 2),
             }
             vector_estado.append((i, fila))
 
     # KPIs 
     estadisticas = {
-        "t_promedio":              round(tiempo_total_acum / n_dias, 2),
-        "pct_cartel_y_extra":      round(cnt_cartel_y_extra / n_dias * 100, 2),
+        "t_promedio": round(tiempo_total_acum / n_dias, 2),
+        "pct_cartel_y_extra": round(cnt_cartel_y_extra / n_dias * 100, 2),
         "cnt_sin_cartel_sin_extra":cnt_sin_cartel_sin_extra,
-        "tiempo_max":              round(tiempo_max, 2),
-        "tiempo_min":              round(tiempo_min, 2),
+        "tiempo_max": round(tiempo_max, 2),
+        "tiempo_min": round(tiempo_min, 2),
         # Extras propios
-        "pct_bloqueo":             round(cnt_bloqueo / n_dias * 100, 2),
-        "t_prom_cercano":  round(tiempo_sector["Cercano"]    / cnt_cercano,    2) if cnt_cercano    else 0,
-        "t_prom_lejano":   round(tiempo_sector["Lejano"]     / cnt_lejano,     2) if cnt_lejano     else 0,
-        "pct_sector_cercano":      round(cnt_cercano    / n_dias * 100, 2),
-        "pct_sector_intermedio":   round(cnt_intermedio / n_dias * 100, 2),
-        "pct_sector_lejano":       round(cnt_lejano     / n_dias * 100, 2),
+        "pct_bloqueo": round(cnt_bloqueo / n_dias * 100, 2),
+        "t_prom_cercano": round(tiempo_sector["Cercano"] / cnt_cercano, 2) if cnt_cercano else 0,
+        "t_prom_lejano": round(tiempo_sector["Lejano"] / cnt_lejano, 2) if cnt_lejano else 0,
+        "pct_sector_cercano": round(cnt_cercano / n_dias * 100, 2),
+        "pct_sector_intermedio": round(cnt_intermedio / n_dias * 100, 2),
+        "pct_sector_lejano": round(cnt_lejano / n_dias * 100, 2),
     }
 
     filas_rango = [f for (idx, f) in vector_estado if fila_inicio <= idx <= fila_fin_rango]
@@ -218,39 +216,39 @@ class App:
         self.root.resizable(True, True)
 
         # Variables de parámetros
-        self.n_dias_var          = tk.IntVar(value=1000)
-        self.semilla_var         = tk.IntVar(value=42)
-        self.fila_inicio_var     = tk.IntVar(value=1)
+        self.n_dias_var = tk.IntVar(value=1000)
+        self.semilla_var = tk.IntVar(value=42)
+        self.fila_inicio_var = tk.IntVar(value=1)
 
-        self.prob_cercano_var    = tk.DoubleVar(value=PROB_CERCANO)
+        self.prob_cercano_var = tk.DoubleVar(value=PROB_CERCANO)
         self.prob_intermedio_var = tk.DoubleVar(value=PROB_INTERMEDIO)
-        self.prob_lejano_var     = tk.DoubleVar(value=PROB_LEJANO)
+        self.prob_lejano_var = tk.DoubleVar(value=PROB_LEJANO)
 
-        self.prob_cartel_var     = tk.DoubleVar(value=PROB_PARADA_CARTEL)
-        self.media_cartel_var    = tk.DoubleVar(value=MEDIA_CARTEL_SEG)
-        self.desvio_cartel_var   = tk.DoubleVar(value=DESVIO_CARTEL_SEG)
+        self.prob_cartel_var = tk.DoubleVar(value=PROB_PARADA_CARTEL)
+        self.media_cartel_var = tk.DoubleVar(value=MEDIA_CARTEL_SEG)
+        self.desvio_cartel_var = tk.DoubleVar(value=DESVIO_CARTEL_SEG)
 
-        self.prob_bloqueo_var    = tk.DoubleVar(value=PROB_BLOQUEO)
-        self.factor_bloqueo_var  = tk.DoubleVar(value=FACTOR_BLOQUEO)
+        self.prob_bloqueo_var = tk.DoubleVar(value=PROB_BLOQUEO)
+        self.factor_bloqueo_var = tk.DoubleVar(value=FACTOR_BLOQUEO)
 
-        self.t_cuadra_min_var    = tk.DoubleVar(value=T_CUADRA_MIN)
-        self.t_cuadra_max_var    = tk.DoubleVar(value=T_CUADRA_MAX)
+        self.t_cuadra_min_var = tk.DoubleVar(value=T_CUADRA_MIN)
+        self.t_cuadra_max_var = tk.DoubleVar(value=T_CUADRA_MAX)
 
-        self.prob_extra_var      = tk.DoubleVar(value=round(PROB_PARADA_EXTRA, 4))
-        self.media_extra_var     = tk.DoubleVar(value=MEDIA_EXTRA_SEG)
+        self.prob_extra_var = tk.DoubleVar(value=round(PROB_PARADA_EXTRA, 4))
+        self.media_extra_var = tk.DoubleVar(value=MEDIA_EXTRA_SEG)
 
         # Variables de resultados
-        self.t_prom_var           = tk.StringVar(value="–")
+        self.t_prom_var = tk.StringVar(value="–")
         self.pct_cartel_extra_var = tk.StringVar(value="–")
-        self.cnt_sin_var          = tk.StringVar(value="–")
-        self.t_max_var            = tk.StringVar(value="–")
-        self.t_min_var            = tk.StringVar(value="–")
-        self.pct_bloqueo_var      = tk.StringVar(value="–")
-        self.t_prom_cercano_var   = tk.StringVar(value="–")
-        self.t_prom_lejano_var    = tk.StringVar(value="–")
-        self.pct_sec_cercano_var  = tk.StringVar(value="–")
-        self.pct_sec_inter_var    = tk.StringVar(value="–")
-        self.pct_sec_lejano_var   = tk.StringVar(value="–")
+        self.cnt_sin_var = tk.StringVar(value="–")
+        self.t_max_var = tk.StringVar(value="–")
+        self.t_min_var = tk.StringVar(value="–")
+        self.pct_bloqueo_var = tk.StringVar(value="–")
+        self.t_prom_cercano_var = tk.StringVar(value="–")
+        self.t_prom_lejano_var = tk.StringVar(value="–")
+        self.pct_sec_cercano_var = tk.StringVar(value="–")
+        self.pct_sec_inter_var = tk.StringVar(value="–")
+        self.pct_sec_lejano_var = tk.StringVar(value="–")
 
         self.df_resultado = None
 
@@ -259,70 +257,70 @@ class App:
         nb.pack(fill="both", expand=True, padx=8, pady=8)
         self.nb = nb
 
-        self.tab_config   = ttk.Frame(nb)
-        self.tab_tabla    = ttk.Frame(nb)
-        self.tab_kpi      = ttk.Frame(nb)
+        self.tab_config = ttk.Frame(nb)
+        self.tab_tabla = ttk.Frame(nb)
+        self.tab_kpi = ttk.Frame(nb)
         self.tab_graficos = ttk.Frame(nb)
 
-        nb.add(self.tab_config,   text="⚙ Configuración")
-        nb.add(self.tab_tabla,    text="📋 Tabla de Simulación")
-        nb.add(self.tab_kpi,      text="📊 Resultados / KPIs")
-        nb.add(self.tab_graficos, text="📈 Gráficos")
+        nb.add(self.tab_config, text="⚙ Configuración")
+        nb.add(self.tab_tabla, text="Tabla de Simulación")
+        nb.add(self.tab_kpi, text="Resultados / KPIs")
+        nb.add(self.tab_graficos, text="Gráficos")
 
         self._build_config_tab()
         self._build_tabla_tab()
         self._build_kpi_tab()
         self._build_graficos_tab()
 
-    # TAB CONFIGURACIÓN 
+    # TAB CONFIGURACIÓN
     def _build_config_tab(self):
         tab = self.tab_config
 
         gen = ttk.LabelFrame(tab, text="Parámetros Generales")
         gen.pack(fill="x", padx=10, pady=6)
         for r, (lbl, var) in enumerate([
-            ("N (jornadas a simular):",        self.n_dias_var),
-            ("Semilla aleatoria:",             self.semilla_var),
-            ("Fila de inicio visualización:",  self.fila_inicio_var),
+            ("N (jornadas a simular):", self.n_dias_var),
+            ("Semilla aleatoria:", self.semilla_var),
+            ("Fila de inicio visualización:", self.fila_inicio_var),
         ]):
             ttk.Label(gen, text=lbl).grid(row=r, column=0, sticky="w", padx=6, pady=3)
             ttk.Entry(gen, textvariable=var, width=12).grid(row=r, column=1, padx=6, pady=3)
 
-        sec = ttk.LabelFrame(tab, text="Probabilidades de Sector  (deben sumar 1.0)")
+        sec = ttk.LabelFrame(tab, text="Probabilidades de Sector (deben sumar 1.0)")
         sec.pack(fill="x", padx=10, pady=6)
         for r, (lbl, var) in enumerate([
-            ("P(Sector Cercano  1-2 cuadras):",   self.prob_cercano_var),
+            ("P(Sector Cercano 1-2 cuadras):", self.prob_cercano_var),
             ("P(Sector Intermedio 2-3 cuadras):", self.prob_intermedio_var),
-            ("P(Sector Lejano  3-5 cuadras):",    self.prob_lejano_var),
+            ("P(Sector Lejano 3-5 cuadras):", self.prob_lejano_var),
         ]):
             ttk.Label(sec, text=lbl).grid(row=r, column=0, sticky="w", padx=6, pady=3)
             ttk.Entry(sec, textvariable=var, width=12).grid(row=r, column=1, padx=6, pady=3)
 
         car = ttk.LabelFrame(tab,
-            text="Detención en Panel/Cartel Informativo  [Normal]  — 45% de ocasiones")
+            text="Detención en Panel/Cartel Informativo [Normal] — 45% de ocasiones")
         car.pack(fill="x", padx=10, pady=6)
         for r, (lbl, var) in enumerate([
-            ("P(Detención en panel/cartel):",      self.prob_cartel_var),
-            ("Media demora panel (seg):",          self.media_cartel_var),
-            ("Desviación demora panel (seg):",     self.desvio_cartel_var),
+            ("P(Detención en panel/cartel):", self.prob_cartel_var),
+            ("Media demora panel (seg):", self.media_cartel_var),
+            ("Desviación demora panel (seg):", self.desvio_cartel_var),
         ]):
             ttk.Label(car, text=lbl).grid(row=r, column=0, sticky="w", padx=6, pady=3)
             ttk.Entry(car, textvariable=var, width=12).grid(row=r, column=1, padx=6, pady=3)
 
         blq = ttk.LabelFrame(tab,
-            text="Bloqueo de Cuadra (solo Cercano/Lejano) y Circulación  [Uniforme]")
+            text="Bloqueo de Cuadra (solo Cercano/Lejano) y Circulación [Uniforme]")
         blq.pack(fill="x", padx=10, pady=6)
         for r, (lbl, var) in enumerate([
             ("P(Bloqueo cuadra) – solo Cercano/Lejano:", self.prob_bloqueo_var),
-            ("Factor de aumento por bloqueo (×):",        self.factor_bloqueo_var),
-            ("T_cuadra mínimo (seg):",                    self.t_cuadra_min_var),
-            ("T_cuadra máximo (seg):",                    self.t_cuadra_max_var),
+            ("Factor de aumento por bloqueo (×):", self.factor_bloqueo_var),
+            ("T_cuadra mínimo (seg):", self.t_cuadra_min_var),
+            ("T_cuadra máximo (seg):", self.t_cuadra_max_var),
         ]):
             ttk.Label(blq, text=lbl).grid(row=r, column=0, sticky="w", padx=6, pady=3)
             ttk.Entry(blq, textvariable=var, width=12).grid(row=r, column=1, padx=6, pady=3)
 
         ext = ttk.LabelFrame(tab,
-            text="Parada Extra en Pago/Validación  [Exponencial]  — 60/250 jornadas")
+            text="Parada Extra en Pago/Validación [Exponencial] — 60/250 jornadas")
         ext.pack(fill="x", padx=10, pady=6)
         for r, (lbl, var) in enumerate([
             ("P(Parada extra) – e.g. 60/250 = 0.24:", self.prob_extra_var),
@@ -338,23 +336,23 @@ class App:
         ttk.Button(btn_frame, text="↺  Restablecer Defaults",
                 command=self.restablecer).pack(side="left", padx=6)
 
-    # TAB TABLA 
+    # TAB TABLA
     def _build_tabla_tab(self):
-        tab   = self.tab_tabla
+        tab = self.tab_tabla
         frame = ttk.Frame(tab)
         frame.pack(fill="both", expand=True, padx=8, pady=8)
 
         self.tree = ttk.Treeview(frame)
-        vsb = ttk.Scrollbar(frame, orient="vertical",   command=self.tree.yview)
+        vsb = ttk.Scrollbar(frame, orient="vertical", command=self.tree.yview)
         hsb = ttk.Scrollbar(frame, orient="horizontal", command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
 
         self.tree.pack(side="left", fill="both", expand=True)
-        vsb.pack(side="right",  fill="y")
+        vsb.pack(side="right", fill="y")
         hsb.pack(side="bottom", fill="x")
 
         self.tree.tag_configure("ultima", background="#fffacd")
-        self.tree.tag_configure("sep",    background="#d0d0d0")
+        self.tree.tag_configure("sep", background="#d0d0d0")
 
     def _cargar_tabla(self, filas_rango, ultima_fila):
         tree = self.tree
@@ -364,7 +362,7 @@ class App:
             return
         cols = list(filas_rango[0].keys()) if filas_rango else list(ultima_fila.keys())
         tree["columns"] = cols
-        tree["show"]    = "headings"
+        tree["show"] = "headings"
         for c in cols:
             tree.heading(c, text=c)
             tree.column(c, width=115, anchor="center")
@@ -376,39 +374,36 @@ class App:
             tree.insert("", "end", values=["..."] * len(cols), tags=("sep",))
             tree.insert("", "end", values=list(ultima_fila.values()), tags=("ultima",))
 
-    # TAB KPIs 
+    # TAB KPIs
     def _build_kpi_tab(self):
         tab = self.tab_kpi
-
         requeridos = ttk.LabelFrame(tab, text="KPIs Requeridos por la Consigna")
         requeridos.pack(fill="x", padx=10, pady=8)
         for r, (lbl, var) in enumerate([
-            ("1. Tiempo promedio de estacionamiento (seg):",              self.t_prom_var),
-            ("2. % Jornadas con detención en panel Y parada extra:",      self.pct_cartel_extra_var),
-            ("3. Jornadas SIN detención en panel NI parada extra:",       self.cnt_sin_var),
-            ("4. Tiempo MÁXIMO de estacionamiento (seg):",                self.t_max_var),
-            ("5. Tiempo MÍNIMO de estacionamiento (seg):",                self.t_min_var),
+            ("1. Tiempo promedio de estacionamiento (seg):", self.t_prom_var),
+            ("2. % Jornadas con detención en panel Y parada extra:", self.pct_cartel_extra_var),
+            ("3. Jornadas SIN detención en panel NI parada extra:", self.cnt_sin_var),
+            ("4. Tiempo MÁXIMO de estacionamiento (seg):", self.t_max_var),
+            ("5. Tiempo MÍNIMO de estacionamiento (seg):", self.t_min_var),
         ]):
             ttk.Label(requeridos, text=lbl, width=55, anchor="w").grid(
                 row=r, column=0, sticky="w", padx=8, pady=4)
             ttk.Label(requeridos, textvariable=var, font=("", 10, "bold"),
                     foreground="#005580").grid(row=r, column=1, padx=8, pady=4, sticky="w")
-
         extras = ttk.LabelFrame(tab, text="KPIs Adicionales (propuestos por el grupo)")
         extras.pack(fill="x", padx=10, pady=8)
         for r, (lbl, var) in enumerate([
-            ("6. % Jornadas con bloqueo de cuadra:",        self.pct_bloqueo_var),
-            ("7. Tiempo promedio sector Cercano (seg):",    self.t_prom_cercano_var),
-            ("8. Tiempo promedio sector Lejano (seg):",     self.t_prom_lejano_var),
-            ("   % Jornadas en sector Cercano:",            self.pct_sec_cercano_var),
-            ("   % Jornadas en sector Intermedio:",         self.pct_sec_inter_var),
-            ("   % Jornadas en sector Lejano:",             self.pct_sec_lejano_var),
+            ("6. % Jornadas con bloqueo de cuadra:", self.pct_bloqueo_var),
+            ("7. Tiempo promedio sector Cercano (seg):", self.t_prom_cercano_var),
+            ("8. Tiempo promedio sector Lejano (seg):", self.t_prom_lejano_var),
+            ("   % Jornadas en sector Cercano:", self.pct_sec_cercano_var),
+            ("   % Jornadas en sector Intermedio:", self.pct_sec_inter_var),
+            ("   % Jornadas en sector Lejano:", self.pct_sec_lejano_var),
         ]):
             ttk.Label(extras, text=lbl, width=55, anchor="w").grid(
                 row=r, column=0, sticky="w", padx=8, pady=4)
             ttk.Label(extras, textvariable=var, font=("", 10, "bold"),
                     foreground="#005500").grid(row=r, column=1, padx=8, pady=4, sticky="w")
-
         # Leyenda
         ley = ttk.LabelFrame(tab, text="Leyenda de columnas clave")
         ley.pack(fill="x", padx=10, pady=8)
@@ -491,7 +486,7 @@ class App:
 
     # LÓGICA DE EJECUCIÓN 
     def ejecutar(self):
-        n       = self.n_dias_var.get()
+        n = self.n_dias_var.get()
         semilla = self.semilla_var.get()
         fila_i  = self.fila_inicio_var.get()
 
@@ -511,20 +506,20 @@ class App:
         np.random.seed(semilla)
 
         filas_rango, ultima_fila, stats = simular(
-            n_dias          = n,
-            prob_cercano    = p_c,
-            prob_intermedio = p_i,
-            prob_lejano     = p_l,
-            prob_cartel     = self.prob_cartel_var.get(),
-            media_cartel    = self.media_cartel_var.get(),
-            desvio_cartel   = self.desvio_cartel_var.get(),
-            prob_bloqueo    = self.prob_bloqueo_var.get(),
-            factor_bloqueo  = self.factor_bloqueo_var.get(),
-            t_cuadra_min    = self.t_cuadra_min_var.get(),
-            t_cuadra_max    = self.t_cuadra_max_var.get(),
-            prob_extra      = self.prob_extra_var.get(),
-            media_extra     = self.media_extra_var.get(),
-            fila_inicio     = fila_i,
+            n_dias=n,
+            prob_cercano=p_c,
+            prob_intermedio=p_i,
+            prob_lejano=p_l,
+            prob_cartel=self.prob_cartel_var.get(),
+            media_cartel=self.media_cartel_var.get(),
+            desvio_cartel=self.desvio_cartel_var.get(),
+            prob_bloqueo=self.prob_bloqueo_var.get(),
+            factor_bloqueo=self.factor_bloqueo_var.get(),
+            t_cuadra_min=self.t_cuadra_min_var.get(),
+            t_cuadra_max=self.t_cuadra_max_var.get(),
+            prob_extra=self.prob_extra_var.get(),
+            media_extra=self.media_extra_var.get(),
+            fila_inicio=fila_i,
         )
 
         if filas_rango:
