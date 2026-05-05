@@ -128,7 +128,7 @@ def simular(n_dias,
 
         if parada_cartel and parada_extra:
             cnt_cartel_y_extra += 1
-        if (not parada_cartel) and (not parada_extra):
+        if (not parada_cartel) and (not hubo_bloqueo) and (not parada_extra):
             cnt_sin_cartel_sin_extra += 1
         if hubo_bloqueo:
             cnt_bloqueo += 1
