@@ -1,7 +1,7 @@
 # TP3 Simulación - Parqueando (Montecarlo)
-**Universidad Tecnológica Nacional - Facultad Regional Córdoba (UTN FRC)**
-**Carrera:** Ingeniería en Sistemas de Información
-**Materia:** Simulación (2026)
+**Universidad Tecnológica Nacional - Facultad Regional Córdoba (UTN FRC)**<br>
+**Carrera:** Ingeniería en Sistemas de Información<br>
+**Materia:** Simulación (2026)<br>
 **Grupo:** 23
 
 ## Integrantes del Grupo
@@ -21,12 +21,6 @@ Para cumplir con los requerimientos de la cátedra, el simulador cuenta con las 
 * **Gestión de Memoria Optimizada:** Se utiliza un Vector de Estado de solo 2 filas en memoria para procesar los datos, permitiendo simular $N \ge 100.000$ iteraciones sin desbordamiento.
 * **Interfaz Gráfica (Frontend):** Desarrollada con `Tkinter`. Permite la parametrización de todas las variables, probabilidades y distribuciones.
 * **Visualización Selectiva:** Solo se renderiza en pantalla un rango específico de iteraciones (desde la fila $i$ hasta la $i+200$) y la fila final $N$, garantizando el rendimiento de la UI.
-
-## 📊 Variables de Análisis Propuestas (Punto 6)
-Además de las métricas obligatorias (tiempos promedios, máximos y mínimos), nuestro grupo definió 3 variables adicionales para evaluar el sistema:
-1. **Porcentaje de uso del Sector Alejado:** Útil para evaluar si la infraestructura de esa zona está subutilizada o requiere más mantenimiento.
-2. **Demora promedio extra sufrida por bloqueos:** Permite aislar y medir el impacto real de las congestiones o roturas en los sectores afectados.
-3. **Porcentaje de conductores en estado crítico (> 4 min):** Mide el ratio de usuarios que experimentan tiempos de estacionamiento excepcionalmente largos, lo cual impacta directamente en la calidad del servicio.
 
 ## Instalación y Ejecución
 El proyecto está desarrollado enteramente en Python y utiliza librerías estándar, por lo que no requiere instalaciones complejas.
