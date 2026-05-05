@@ -441,7 +441,7 @@ class App:
         self.axs[0].bar(sectores, pcts, color=["#F2DDA4", "#B4E1D0", "#F4B3A8"])
         self.axs[0].set_title("Distribución de Sectores (%)")
         self.axs[0].set_ylabel("%")
-        self.axs[0].set_ylim(0, 60)
+        self.axs[0].set_ylim(0, 110)
         for i, v in enumerate(pcts):
             self.axs[0].text(i, v + 0.5, f"{v:.1f}%", ha="center", fontsize=9)
 
@@ -478,6 +478,7 @@ class App:
                         color=["#ACF4F4", "#B9A3E3", "#FADADD", "#C1D5C0"])
         self.axs[2].set_title("% de Ocurrencia de Eventos")
         self.axs[2].set_ylabel("%")
+        self.axs[2].set_ylim(0, 110)
         for i, v in enumerate(vals3):
             self.axs[2].text(i, v + 0.3, f"{v:.1f}%", ha="center", fontsize=8)
 
